@@ -16,7 +16,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var adapter: DetailPagerAdapter
 
     private val transPosition: Int by lazy { intent.getIntExtra(ARG_POSITION, 0) }
-    private val images: List<Image> by lazy { intent.getParcelableArrayListExtra<Image>(ARG_DATA) }
+    private val images: MutableList<Image>? by lazy { intent.getParcelableArrayListExtra<Image>(ARG_DATA)?.toMutableList() }
     private var currentPosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,9 +24,10 @@ class DetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail)
         currentPosition = transPosition
         supportPostponeEnterTransition()
-        adapter = DetailPagerAdapter(images, fragmentManager = supportFragmentManager)
-        initViewPager(adapter)
-
+        images?.let {
+            adapter = DetailPagerAdapter(it, fragmentManager = supportFragmentManager)
+            initViewPager(adapter)
+        }
     }
 
     private fun initViewPager(adapter: DetailPagerAdapter) {
@@ -52,7 +53,6 @@ class DetailActivity : AppCompatActivity() {
             finish()
         }
     }
-
 
     inner class DetailPagerAdapter(
             private val images: List<Image>,
